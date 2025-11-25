@@ -14,7 +14,8 @@ const state = reactive({
   oldPassword: '',
   newPassword: '',
   avatarFile: null,
-  avatarPreview: ''
+  avatarPreview: '',
+  error: ''
 })
 
 // 监听用户信息变化
@@ -32,10 +33,11 @@ const handleUpdateProfile = () => {
 }
 
 const handleAvatarChange = (event) => {
+  state.error = ''
   const file = event.target.files[0]
   if (file) {
     if (file.size > 2 * 1024 * 1024) { // 2MB limit
-      alert('图片大小不能超过2MB')
+      state.error = '图片大小不能超过2MB'
       return
     }
 
@@ -86,6 +88,7 @@ const handleLogout = () => {
         </button>
 
         <div class="avatar-section">
+          <div v-if="state.error" class="error-msg-modal">{{ state.error }}</div>
           <div class="avatar-container">
             <img
               :src="state.avatarPreview || user?.avatar || '/default-avatar.svg'"
@@ -262,7 +265,17 @@ const handleLogout = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  margin-top: -3rem;
+  margin-bottom: 1.5rem;
+}
+
+.error-msg-modal {
+  color: var(--mt-error);
+  font-size: 0.875rem;
+  background: #FFF0F0;
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .avatar-container {

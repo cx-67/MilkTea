@@ -202,6 +202,7 @@ public class RecordService {
                 record.getId(),
                 record.getBrand().getId(),
                 record.getBrand().getName(),
+                record.getBrand().getLogoUrl(),
                 record.getCategory(),
                 record.getSweetness(),
                 record.getIceLevel(),

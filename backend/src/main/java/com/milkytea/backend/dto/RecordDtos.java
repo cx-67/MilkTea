@@ -99,6 +99,9 @@ public class RecordDtos {
         @Schema(description = "品牌名称")
         private String brandName;
 
+        @Schema(description = "品牌Logo")
+        private String brandLogo;
+
         @Schema(description = "品类")
         private String category;
 

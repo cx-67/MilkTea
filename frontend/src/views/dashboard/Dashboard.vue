@@ -384,7 +384,11 @@ onMounted(() => {
 
         <div class="date-records">
           <div v-if="state.selectedDate.records.length === 0" class="empty-records">
-            记录已全部删除
+            <div class="empty-state-icon">📝</div>
+            <p>暂无记录</p>
+            <button @click="state.recordModalOpen = true; state.selectedDate = null" class="empty-state-btn">
+              记一杯
+            </button>
           </div>
           <div v-else class="record-list">
             <div
@@ -636,9 +640,35 @@ onMounted(() => {
 }
 
 .empty-records {
+  padding: 2rem;
   text-align: center;
   color: var(--mt-text-light);
-  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.empty-state-icon {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.empty-state-btn {
+  margin-top: 0.5rem;
+  padding: 0.5rem 1.5rem;
+  background-color: var(--mt-primary);
+  color: white;
+  border: none;
+  border-radius: 2rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.empty-state-btn:hover {
+  background-color: var(--mt-primary-dark);
+  transform: translateY(-1px);
 }
 
 .record-list {

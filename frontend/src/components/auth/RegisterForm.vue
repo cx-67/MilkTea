@@ -43,18 +43,33 @@ async function submit() {
       router.push('/home')
     }
   } catch (e) {
-    // 显示友好的错误信息
-    if (e.body && e.body.errors) {
-      // 后端验证错误,提取字段错误
-      const errors = e.body.errors
-      const errorMessages = []
-      if (errors.username) errorMessages.push('用户名: ' + errors.username)
-      if (errors.phone) errorMessages.push('手机号: ' + errors.phone)
-      if (errors.password) errorMessages.push('密码: ' + errors.password)
-      error.message = errorMessages.length > 0 ? errorMessages.join('; ') : '注册信息有误,请检查后重试'
+    // 优先提取后端返回的具体错误信息
+    // 兼容 axios 的 e.response.data 或其他库的 e.body
+    const errorData = e.response?.data || e.body || e
+
+    if (errorData) {
+      // 1. 处理字段校验错误 (例如: { errors: { phone: "手机号格式不正确" } })
+      if (errorData.errors) {
+        const msgs = []
+        const errs = errorData.errors
+        if (typeof errs === 'object' && !Array.isArray(errs)) {
+          // 提取所有字段的错误信息
+          Object.values(errs).forEach(msg => msgs.push(msg))
+        } else if (Array.isArray(errs)) {
+          errs.forEach(msg => msgs.push(msg))
+        }
+        error.message = msgs.length > 0 ? msgs.join('; ') : '输入信息有误'
+      } 
+      // 2. 处理业务冲突错误 (例如: { message: "手机号已注册" })
+      else if (errorData.message) {
+        error.message = errorData.message
+      }
+      // 3. 兜底
+      else {
+        error.message = e.message || '注册失败，请稍后重试'
+      }
     } else {
-      // 使用request.js处理过的友好错误消息
-      error.message = e.message || '注册失败,请稍后重试'
+      error.message = e.message || '注册失败，请稍后重试'
     }
   } finally { loading.value = false }
 }

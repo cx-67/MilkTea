@@ -33,7 +33,13 @@ async function submit() {
       router.push(redirect)
     }
   } catch (e) {
-    error.message = e.message || '登录失败'
+    // 优先提取后端返回的具体错误信息
+    const errorData = e.response?.data || e.body || e
+    if (errorData && errorData.message) {
+      error.message = errorData.message
+    } else {
+      error.message = e.message || '登录失败，请检查网络或稍后重试'
+    }
   } finally {
     loading.value = false
   }

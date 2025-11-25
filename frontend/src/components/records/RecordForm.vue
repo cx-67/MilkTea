@@ -29,7 +29,8 @@ const customBrand = reactive({
   value: '',
   imageFile: null,
   imagePreview: '',
-  uploading: false
+  uploading: false,
+  error: ''
 })
 
 // 合并默认品牌和用户自定义品牌
@@ -86,17 +87,18 @@ const selectBrand = (brand) => {
 }
 
 const handleImageChange = (event) => {
+  customBrand.error = ''
   const file = event.target.files[0]
   if (file) {
     // 验证文件类型
     if (!file.type.startsWith('image/')) {
-      alert('请选择图片文件')
+      customBrand.error = '请选择图片文件'
       return
     }
 
     // 验证文件大小 (2MB)
     if (file.size > 2 * 1024 * 1024) {
-      alert('图片大小不能超过2MB')
+      customBrand.error = '图片大小不能超过2MB'
       return
     }
 
@@ -112,6 +114,7 @@ const handleImageChange = (event) => {
 }
 
 const handleConfirmAddBrand = async () => {
+  customBrand.error = ''
   if (customBrand.value.trim()) {
     customBrand.uploading = true
 
@@ -139,10 +142,11 @@ const handleConfirmAddBrand = async () => {
       customBrand.value = ''
       customBrand.imageFile = null
       customBrand.imagePreview = ''
+      customBrand.error = ''
 
     } catch (error) {
       console.error('添加品牌失败:', error)
-      alert('添加品牌失败: ' + error.message)
+      customBrand.error = '添加品牌失败: ' + (error.message || '未知错误')
     } finally {
       customBrand.uploading = false
     }
@@ -155,6 +159,7 @@ const cancelAddBrand = () => {
   customBrand.imageFile = null
   customBrand.imagePreview = ''
   customBrand.uploading = false
+  customBrand.error = ''
 }
 </script>
 
@@ -208,6 +213,7 @@ const cancelAddBrand = () => {
         <!-- 添加品牌UI -->
         <div v-if="isAddingBrand.value" class="add-brand-inline">
           <div class="add-brand-form">
+            <div v-if="customBrand.error" class="error-msg-inline">{{ customBrand.error }}</div>
             <input
               type="text"
               v-model="customBrand.value"
@@ -496,6 +502,14 @@ const cancelAddBrand = () => {
   border: 2px dashed var(--mt-primary);
   border-radius: var(--mt-radius);
   background: var(--mt-primary-light);
+}
+
+.error-msg-inline {
+  color: var(--mt-error);
+  font-size: 0.875rem;
+  background: #FFF0F0;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
 }
 
 .image-upload-section {

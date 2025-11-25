@@ -147,24 +147,18 @@ const handleDateClick = (dayData) => {
           @click="handleDateClick(item)"
         >
           <div v-if="item" class="day-content">
-            <span class="day-number">{{ item.day }}</span>
-
-            <!-- 品牌图标指示器 -->
-            <div v-if="item.records.length > 0" class="brand-indicators">
-              <div
-                v-for="brandGroup in item.brandGroups"
-                :key="brandGroup.id"
-                class="brand-indicator"
-                :title="`${brandGroup.name} ×${brandGroup.count}`"
-              >
-                <img
-                  :src="brandGroup.logo || '/default-brand-icon.png'"
-                  :alt="brandGroup.name"
-                  class="brand-icon-mini"
-                />
-                <span v-if="brandGroup.count > 1" class="brand-count">×{{ brandGroup.count }}</span>
+            <!-- 背景Logo -->
+            <div v-if="item.brandGroups.length > 0" class="brand-bg">
+              <img 
+                :src="item.brandGroups[0].logo || '/default-brand-icon.png'" 
+                class="brand-bg-img"
+              />
+              <div v-if="item.brandGroups.length > 1" class="brand-count-badge">
+                +{{ item.brandGroups.length - 1 }}
               </div>
             </div>
+
+            <span class="day-number">{{ item.day }}</span>
 
             <!-- 总价格 -->
             <div v-if="item.records.length > 0" class="total-price">
@@ -252,7 +246,7 @@ const handleDateClick = (dayData) => {
 }
 
 .day-cell {
-  min-height: 5rem;
+  aspect-ratio: 1;
   border-radius: 0.75rem;
   transition: var(--mt-transition);
   cursor: pointer;
@@ -277,65 +271,49 @@ const handleDateClick = (dayData) => {
   display: flex;
   flex-direction: column;
   position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.brand-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  opacity: 0.8;
+}
+
+.brand-bg-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.brand-count-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: rgba(0,0,0,0.5);
+  color: white;
+  font-size: 10px;
+  padding: 1px 4px;
+  border-radius: 4px;
 }
 
 .day-number {
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--mt-text-light);
+  position: relative;
+  z-index: 2;
 }
 
 .has-records .day-number {
   color: var(--mt-primary);
-  font-weight: 600;
-}
-
-.record-indicators,
-.brand-indicators {
-  margin-top: 0.25rem;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.125rem;
-  justify-content: center;
-  min-height: 16px;
-}
-
-.brand-indicator {
-  display: flex;
-  align-items: center;
-  gap: 1px;
-  position: relative;
-}
-
-.brand-icon-mini {
-  width: 12px;
-  height: 12px;
-  object-fit: cover;
-  border-radius: 2px;
-  border: 1px solid rgba(255, 255, 255, 0.9);
-  background: white;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.brand-count {
-  font-size: 0.625rem;
-  color: var(--mt-primary);
   font-weight: 700;
-  line-height: 1;
-  margin-left: 1px;
-}
-
-.milk-tea-icon {
-  color: var(--mt-primary);
-  width: 1rem;
-  height: 1rem;
-}
-
-.record-count {
-  font-size: 0.75rem;
-  color: var(--mt-primary);
-  font-weight: 600;
+  text-shadow: 0 0 3px rgba(255,255,255,0.9);
 }
 
 .total-price {
@@ -343,8 +321,13 @@ const handleDateClick = (dayData) => {
   bottom: 0.25rem;
   right: 0.5rem;
   font-size: 0.75rem;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--mt-accent);
+  background: rgba(255,255,255,0.8);
+  padding: 0 4px;
+  border-radius: 4px;
+  backdrop-filter: blur(2px);
+  z-index: 2;
 }
 
 /* 响应式设计 */
@@ -353,20 +336,12 @@ const handleDateClick = (dayData) => {
     padding: 1.5rem;
   }
 
-  .day-cell {
-    min-height: 6.25rem;
-  }
-
   .month-title {
     font-size: 1.75rem;
   }
 }
 
 @media (max-width: 640px) {
-  .day-cell {
-    min-height: 4rem;
-  }
-
   .day-content {
     padding: 0.25rem;
   }
