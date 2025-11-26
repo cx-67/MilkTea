@@ -41,7 +41,7 @@ const navigationItems = [
             <path d="M5 3v18l7-2 7 2V3H5zm7 14c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"/>
           </svg>
         </div>
-        <span class="logo-text">Bobalog</span>
+        <span class="logo-text">MilkyTeaLog</span>
       </div>
 
       <!-- 导航菜单 -->
@@ -93,7 +93,7 @@ const navigationItems = [
         <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
           <path d="M5 3v18l7-2 7 2V3H5zm7 14c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"/>
         </svg>
-        <span class="mobile-logo-text">Bobalog</span>
+        <span class="mobile-logo-text">MilkyTeaLog</span>
       </div>
       <button @click="handleShowProfile" class="mobile-profile-btn">
         <img v-if="user?.avatar" :src="user.avatar" alt="Avatar" class="mobile-avatar-img" />

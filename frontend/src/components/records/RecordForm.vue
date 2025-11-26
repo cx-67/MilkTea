@@ -657,6 +657,7 @@ const cancelAddBrand = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 0.25rem;
   padding: 0.75rem 0.5rem;
   border: 2px dashed var(--mt-primary);
@@ -666,30 +667,12 @@ const cancelAddBrand = () => {
   transition: var(--mt-transition);
   color: var(--mt-primary);
   font-size: 0.75rem;
+  min-height: 80px;
 }
 
 .add-brand-btn:hover {
   border-color: var(--mt-primary-dark);
   background: var(--mt-primary-light);
-}
-
-.add-brand-btn {
-  padding: 0.375rem 0.75rem;
-  border: 2px dashed var(--mt-primary);
-  background-color: var(--mt-white);
-  color: var(--mt-primary);
-  border-radius: var(--mt-radius);
-  font-size: 0.75rem;
-  cursor: pointer;
-  transition: var(--mt-transition);
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.add-brand-btn:hover {
-  border-color: var(--mt-accent);
-  background-color: rgba(212, 165, 116, 0.05);
 }
 
 .add-brand-inline {

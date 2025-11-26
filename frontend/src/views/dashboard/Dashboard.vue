@@ -313,7 +313,7 @@ onMounted(() => {
     <!-- 加载状态 -->
     <div v-if="state.loading" class="loading-container">
       <div class="loading-spinner"></div>
-      <p>Loading Bobalog...</p>
+      <p>Loading MilkyTeaLog...</p>
     </div>
 
     <!-- 主要内容 -->
