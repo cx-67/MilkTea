@@ -265,8 +265,8 @@ const handleLogout = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: -3rem;
-  margin-bottom: 1.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 .error-msg-modal {

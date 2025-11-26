@@ -397,10 +397,19 @@ onMounted(() => {
               class="record-item"
             >
               <div class="record-info">
-                <div class="record-emoji">🥤</div>
+                <div class="record-emoji">
+                  <img 
+                    v-if="record.brandLogo" 
+                    :src="record.brandLogo" 
+                    class="record-brand-logo" 
+                    alt="brand"
+                  />
+                  <span v-else>🥤</span>
+                </div>
                 <div class="record-details">
                   <p class="record-name">{{ record.brandName || record.brand }} | {{ record.category }}</p>
                   <p class="record-specs">{{ record.sweetness || record.sugar }} · {{ record.iceLevel || record.ice }} · {{ record.rating || record.score }}分</p>
+                  <p v-if="record.comment" class="record-comment">"{{ record.comment }}"</p>
                 </div>
               </div>
               <div class="record-actions">
@@ -703,12 +712,30 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   font-size: 1.125rem;
+  overflow: hidden;
+}
+
+.record-brand-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .record-details {
   display: flex;
   flex-direction: column;
   gap: 0.125rem;
+}
+
+.record-comment {
+  font-size: 0.75rem;
+  color: var(--mt-text-light);
+  font-style: italic;
+  margin: 0.125rem 0 0 0;
+  background: rgba(0,0,0,0.03);
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: inline-block;
 }
 
 .record-name {

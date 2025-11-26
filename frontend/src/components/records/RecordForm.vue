@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, watch, computed } from 'vue'
+import { reactive, watch, computed, ref } from 'vue'
 import { DEFAULT_BRANDS, SUGAR_LEVELS, ICE_LEVELS, formatDate } from '../../utils/constants'
 
 const props = defineProps({
@@ -11,6 +11,8 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['save', 'addBrand'])
+
+const validationError = ref('')
 
 const form = reactive({
   brandId: null,    // 存储选中的品牌ID
@@ -42,7 +44,16 @@ const allBrands = computed(() => {
 // 当传入初始数据时，填充表单
 watch(() => props.initialData, (newData) => {
   if (newData) {
-    Object.assign(form, newData)
+    // 处理字段映射
+    form.brandId = newData.brandId
+    form.brand = newData.brandName || newData.brand
+    form.category = newData.category
+    form.sugar = newData.sweetness || newData.sugar
+    form.ice = newData.iceLevel || newData.ice
+    form.price = newData.price
+    form.score = newData.rating !== undefined ? newData.rating : (newData.score !== undefined ? newData.score : 8)
+    form.comment = newData.comment || ''
+    form.date = newData.consumeDate || newData.date || formatDate(new Date())
   } else {
     // 重置表单
     Object.assign(form, {
@@ -60,7 +71,22 @@ watch(() => props.initialData, (newData) => {
 }, { immediate: true })
 
 const handleSave = () => {
-  if (!form.brandId || !form.price) return
+  validationError.value = ''
+  
+  if (!form.brandId) {
+    validationError.value = '请选择品牌'
+    return
+  }
+
+  if (!form.category || !form.category.trim()) {
+    validationError.value = '请输入品类名称'
+    return
+  }
+  
+  if (!form.price) {
+    validationError.value = '请输入价格'
+    return
+  }
 
   // 转换为API格式
   const recordData = {
@@ -362,9 +388,10 @@ const cancelAddBrand = () => {
       ></textarea>
     </div>
 
+    <div v-if="validationError" class="form-error-msg">{{ validationError }}</div>
+
     <button
       @click="handleSave"
-      :disabled="!form.brand || !form.price"
       class="save-btn"
     >
       {{ initialData ? '保存修改' : '确认添加' }}
@@ -373,6 +400,23 @@ const cancelAddBrand = () => {
 </template>
 
 <style scoped>
+.form-error-msg {
+  color: var(--mt-error);
+  font-size: 0.875rem;
+  text-align: center;
+  background: #FFF0F0;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
 .record-form {
   padding: 1.5rem;
   display: flex;
@@ -468,7 +512,14 @@ const cancelAddBrand = () => {
 .brand-icon-active {
   border-color: var(--mt-primary);
   background: var(--mt-primary-light);
-  box-shadow: 0 2px 8px rgba(212, 165, 116, 0.3);
+  box-shadow: 0 4px 12px rgba(212, 165, 116, 0.5);
+  transform: translateY(-2px);
+  border-width: 2px;
+}
+
+.brand-icon-active .brand-name {
+  font-weight: 700;
+  color: var(--mt-primary);
 }
 
 .brand-icon {
