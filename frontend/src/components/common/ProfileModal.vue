@@ -488,7 +488,7 @@ const handleLogout = () => {
 }
 
 .password-inputs .action-btn {
-  align-self: flex-start;
+  align-self: center;
   margin-top: 0.25rem;
 }
 
