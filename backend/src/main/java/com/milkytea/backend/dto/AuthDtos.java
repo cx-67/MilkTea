@@ -69,11 +69,15 @@ public class AuthDtos {
         @Schema(description = "手机号")
         private String phone;
 
-        public AuthResponse(String token, Long userId, String username, String phone) {
+        @Schema(description = "用户头像")
+        private String avatar;
+
+        public AuthResponse(String token, Long userId, String username, String phone, String avatar) {
             this.token = token;
             this.userId = userId;
             this.username = username;
             this.phone = phone;
+            this.avatar = avatar;
         }
     }
 }

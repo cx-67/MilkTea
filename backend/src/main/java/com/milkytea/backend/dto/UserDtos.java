@@ -35,6 +35,19 @@ public class UserDtos {
 
         @Schema(description = "更新时间")
         private LocalDateTime updatedAt;
+
+        @Schema(description = "新的JWT令牌(仅在修改用户名时返回)")
+        private String token;
+
+        public UserProfileResponse(Long id, String username, String phone, String avatar, LocalDateTime createdAt,
+                LocalDateTime updatedAt) {
+            this.id = id;
+            this.username = username;
+            this.phone = phone;
+            this.avatar = avatar;
+            this.createdAt = createdAt;
+            this.updatedAt = updatedAt;
+        }
     }
 
     @Data

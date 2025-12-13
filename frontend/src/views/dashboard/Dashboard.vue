@@ -1,7 +1,7 @@
 <script setup>
 import { reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { getUser, removeToken, removeUser } from '../../utils/auth'
+import { getUser, removeToken, removeUser, setUser, setToken } from '../../utils/auth'
 import { getRecords, createRecord, updateRecord, deleteRecord } from '../../api/records'
 import { getAllBrands, createBrand } from '../../api/brands'
 import { updateUserProfile, updateUsername, updatePassword } from '../../api/user'
@@ -54,6 +54,24 @@ const monthYearDisplay = computed(() => {
   const year = state.currentDate.getFullYear()
   const month = state.currentDate.getMonth() + 1
   return `${year}年${month}月`
+})
+
+const displayYear = computed({
+  get: () => state.currentDate.getFullYear(),
+  set: (val) => {
+    const newDate = new Date(state.currentDate)
+    newDate.setFullYear(val)
+    state.currentDate = newDate
+  }
+})
+
+const displayMonth = computed({
+  get: () => state.currentDate.getMonth() + 1,
+  set: (val) => {
+    const newDate = new Date(state.currentDate)
+    newDate.setMonth(val - 1)
+    state.currentDate = newDate
+  }
 })
 
 // 工具函数
@@ -212,6 +230,8 @@ const handleUpdateProfile = async (profileData) => {
     await updateUserProfile(profileData)
     // 更新本地用户信息
     state.user = { ...state.user, ...profileData }
+    // 同步更新localStorage
+    setUser(state.user)
     showToast('用户信息已更新')
   } catch (error) {
     console.error('更新用户信息失败:', error)
@@ -221,11 +241,32 @@ const handleUpdateProfile = async (profileData) => {
 
 const handleUpdateUsername = async (username) => {
   try {
+    console.log('🔄 Calling updateUsername API with:', username)
     const updatedUser = await updateUsername(username)
-    state.user = { ...state.user, username: updatedUser.username }
+    console.log('✅ API Response:', updatedUser)
+    
+    // 如果返回了新的token，更新本地token
+    if (updatedUser.token) {
+      setToken(updatedUser.token)
+    }
+
+    // 更新完整的用户信息
+    state.user = { 
+      ...state.user, 
+      username: updatedUser.username || username,
+      avatar: updatedUser.avatar || state.user.avatar,
+      phone: updatedUser.phone || state.user.phone
+    }
+    // 同步更新localStorage
+    setUser(state.user)
     showToast('用户名已更新')
   } catch (error) {
-    console.error('更新用户名失败:', error)
+    console.error('❌ 更新用户名失败:', error)
+    console.error('Error details:', {
+      message: error.message,
+      status: error.status,
+      body: error.body
+    })
     showToast(error.message, 'error')
   }
 }
@@ -324,23 +365,65 @@ onMounted(() => {
         :records="state.records"
       />
 
+      <!-- 我的记录视图 (占位) -->
+      <div v-else-if="state.currentTab === 'records'" class="placeholder-view">
+        <div class="empty-state">
+          <div class="empty-state-icon">📋</div>
+          <h3>我的记录列表</h3>
+          <p>这里将显示所有奶茶消费记录的列表视图</p>
+          <p class="coming-soon">功能开发中...</p>
+        </div>
+      </div>
+
+      <!-- 品牌图鉴视图 (占位) -->
+      <div v-else-if="state.currentTab === 'brands'" class="placeholder-view">
+        <div class="empty-state">
+          <div class="empty-state-icon">🏷️</div>
+          <h3>品牌图鉴</h3>
+          <p>这里将展示所有打卡过的奶茶品牌统计</p>
+          <p class="coming-soon">功能开发中...</p>
+        </div>
+      </div>
+
       <!-- 日历视图 -->
       <div v-else class="calendar-section">
         <!-- 头部信息 -->
         <div class="section-header">
           <div class="month-nav">
-            <h2 class="month-title">{{ monthYearDisplay }}</h2>
-            <div class="nav-controls">
+            <div class="date-input-group">
               <button @click="goToPreviousMonth" class="nav-btn">
                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <polyline points="15,18 9,12 15,6"></polyline>
                 </svg>
               </button>
+              
+              <input 
+                type="number" 
+                v-model="displayYear"
+                class="date-input year-input"
+                min="2000"
+                max="2099"
+              />
+              <span class="date-label">年</span>
+              <input 
+                type="number" 
+                v-model="displayMonth"
+                class="date-input month-input"
+                min="1"
+                max="12"
+              />
+              <span class="date-label">月</span>
+
               <button @click="goToNextMonth" class="nav-btn">
                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <polyline points="9,18 15,12 9,6"></polyline>
                 </svg>
               </button>
+            </div>
+
+            <div class="monthly-stats">
+              <span class="stats-label">本月消费</span>
+              <span class="stats-amount">¥{{ currentMonthStats.spent.toFixed(1) }}</span>
             </div>
           </div>
 
@@ -487,6 +570,9 @@ onMounted(() => {
 
 .dashboard-content {
   animation: fade-in 0.5s ease-out;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 @keyframes fade-in {
@@ -503,7 +589,9 @@ onMounted(() => {
 .calendar-section {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
+  flex: 1;
+  min-height: 0;
 }
 
 .section-header {
@@ -518,16 +606,54 @@ onMounted(() => {
   align-items: center;
 }
 
-.month-title {
+.date-input-group {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.date-input {
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--mt-text-main);
-  margin: 0;
+  border: none;
+  background: var(--mt-input-bg);
+  font-family: inherit;
+  outline: none;
+  padding: 0.25rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s;
+  text-align: center;
 }
 
-.nav-controls {
-  display: flex;
-  gap: 0.25rem;
+.year-input {
+  width: 6rem;
+}
+
+.month-input {
+  width: 4rem;
+}
+
+/* 始终显示数字输入框的调节按钮 */
+.date-input::-webkit-inner-spin-button,
+.date-input::-webkit-outer-spin-button {
+  opacity: 1;
+  height: auto;
+}
+
+.date-input:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.date-input:focus {
+  background-color: var(--mt-input-bg);
+  box-shadow: 0 0 0 2px var(--mt-primary);
+}
+
+.date-label {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--mt-text-main);
 }
 
 .nav-btn {
@@ -546,6 +672,23 @@ onMounted(() => {
 .nav-btn:hover {
   background: var(--mt-input-bg);
   color: var(--mt-text-main);
+}
+
+.monthly-stats {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.stats-label {
+  font-size: 0.875rem;
+  color: var(--mt-text-light);
+}
+
+.stats-amount {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--mt-primary);
 }
 
 .add-record-section {
@@ -816,6 +959,25 @@ onMounted(() => {
 
 .close-modal-btn:hover {
   color: var(--mt-text-main);
+}
+
+.placeholder-view {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: var(--mt-white);
+  border-radius: 1rem;
+  padding: 2rem;
+}
+
+.coming-soon {
+  color: var(--mt-primary);
+  font-weight: 600;
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background: rgba(212, 165, 116, 0.1);
+  border-radius: 2rem;
 }
 
 /* 响应式设计 */

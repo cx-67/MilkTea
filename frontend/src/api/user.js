@@ -19,8 +19,7 @@ export async function updateUserProfile(profileData) {
 export async function updateUsername(newUsername) {
   return await request('/api/user/username', {
     method: 'PATCH',
-    body: JSON.stringify({ newUsername }),
-    headers: { 'Content-Type': 'application/json' }
+    body: { newUsername }
   })
 }
 
@@ -28,8 +27,7 @@ export async function updateUsername(newUsername) {
 export async function updatePassword(oldPassword, newPassword) {
   return await request('/api/user/change-password', {
     method: 'POST',
-    body: JSON.stringify({ oldPassword, newPassword }),
-    headers: { 'Content-Type': 'application/json' }
+    body: { oldPassword, newPassword }
   })
 }
 

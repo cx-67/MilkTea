@@ -28,7 +28,12 @@ async function submit() {
     const res = await apiLogin({ phone: form.phone.trim(), password: form.password })
     if (res && res.token) {
       setToken(res.token)
-      setUser({ id: res.userId, username: res.username, phone: res.phone })
+      setUser({ 
+        id: res.userId, 
+        username: res.username, 
+        phone: res.phone,
+        avatar: res.avatar 
+      })
       const redirect = router.currentRoute.value.query.redirect || '/home'
       router.push(redirect)
     }

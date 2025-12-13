@@ -13,9 +13,13 @@ const state = reactive({
   username: '',
   oldPassword: '',
   newPassword: '',
+  showOldPassword: false,
+  showNewPassword: false,
   avatarFile: null,
   avatarPreview: '',
-  error: ''
+  error: '',
+  usernameError: '',
+  passwordError: ''
 })
 
 // 监听用户信息变化
@@ -27,9 +31,32 @@ watch(() => props.user, (newUser) => {
 
 
 const handleUpdateProfile = () => {
-  if (state.username.trim()) {
-    emit('updateUsername', state.username.trim())
+  state.usernameError = ''
+  const username = state.username.trim()
+  
+  console.log('📝 Updating username:', { 
+    newUsername: username, 
+    currentUsername: props.user?.username,
+    isSame: username === props.user?.username 
+  })
+  
+  if (!username) {
+    state.usernameError = '用户名不能为空'
+    return
   }
+  
+  if (username.length < 3 || username.length > 25) {
+    state.usernameError = '用户名不符合规范'
+    return
+  }
+  
+  // 检查是否与当前用户名相同
+  if (username === props.user?.username) {
+    state.usernameError = '新用户名与当前用户名相同'
+    return
+  }
+  
+  emit('updateUsername', username)
 }
 
 const handleAvatarChange = (event) => {
@@ -62,11 +89,35 @@ const handleUpdateAvatar = () => {
 }
 
 const handleUpdatePassword = () => {
-  if (state.newPassword.length >= 6) {
-    emit('updatePassword', state.oldPassword, state.newPassword)
-    state.oldPassword = ''
-    state.newPassword = ''
+  state.passwordError = ''
+  
+  if (!state.oldPassword) {
+    state.passwordError = '请输入当前密码'
+    return
   }
+  
+  if (!state.newPassword) {
+    state.passwordError = '请输入新密码'
+    return
+  }
+  
+  if (state.newPassword.length < 6 || state.newPassword.length > 25) {
+    state.passwordError = '密码不符合规范'
+    return
+  }
+  
+  // 检查是否包含字母和数字
+  const hasLetter = /[a-zA-Z]/.test(state.newPassword)
+  const hasDigit = /\d/.test(state.newPassword)
+  
+  if (!hasLetter || !hasDigit) {
+    state.passwordError = '密码不符合规范'
+    return
+  }
+  
+  emit('updatePassword', state.oldPassword, state.newPassword)
+  state.oldPassword = ''
+  state.newPassword = ''
 }
 
 
@@ -135,34 +186,76 @@ const handleLogout = () => {
         <div class="profile-tab">
           <div class="form-section">
             <label class="section-label">修改用户名</label>
+            <p class="field-hint">用户名长度必须在3-25个字符之间</p>
             <div class="input-group">
               <input
                 type="text"
                 v-model="state.username"
                 class="modal-input"
+                :class="{ 'input-error': state.usernameError }"
                 placeholder="用户名"
               />
               <button @click="handleUpdateProfile" class="action-btn">保存</button>
             </div>
+            <p v-if="state.usernameError" class="error-msg">{{ state.usernameError }}</p>
           </div>
 
           <div class="form-section">
             <label class="section-label">修改密码</label>
+            <p class="field-hint">密码长度必须在6-25个字符之间，需包含字母与数字</p>
             <div class="password-inputs">
-              <input
-                type="password"
-                v-model="state.oldPassword"
-                class="modal-input"
-                placeholder="当前密码"
-              />
-              <input
-                type="password"
-                v-model="state.newPassword"
-                class="modal-input"
-                placeholder="新密码"
-              />
+              <div class="input-wrapper">
+                <input
+                  :type="state.showOldPassword ? 'text' : 'password'"
+                  v-model="state.oldPassword"
+                  class="modal-input"
+                  :class="{ 'input-error': state.passwordError }"
+                  placeholder="当前密码"
+                />
+                <button 
+                  class="toggle-password" 
+                  @click="state.showOldPassword = !state.showOldPassword"
+                  type="button"
+                  tabindex="-1"
+                >
+                  <svg v-if="state.showOldPassword" class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                  <svg v-else class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                  </svg>
+                </button>
+              </div>
+
+              <div class="input-wrapper">
+                <input
+                  :type="state.showNewPassword ? 'text' : 'password'"
+                  v-model="state.newPassword"
+                  class="modal-input"
+                  :class="{ 'input-error': state.passwordError }"
+                  placeholder="新密码"
+                />
+                <button 
+                  class="toggle-password" 
+                  @click="state.showNewPassword = !state.showNewPassword"
+                  type="button"
+                  tabindex="-1"
+                >
+                  <svg v-if="state.showNewPassword" class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                  <svg v-else class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                  </svg>
+                </button>
+              </div>
               <button @click="handleUpdatePassword" class="action-btn">修改</button>
             </div>
+            <p v-if="state.passwordError" class="error-msg">{{ state.passwordError }}</p>
           </div>
 
           <button @click="handleLogout" class="logout-btn">
@@ -370,10 +463,17 @@ const handleLogout = () => {
 
 .section-label {
   display: block;
+  font-size: 0.875rem;
+  color: var(--mt-text-main);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.field-hint {
   font-size: 0.75rem;
-  color: var(--mt-text-light);
-  margin-bottom: 0.25rem;
-  font-weight: 500;
+  color: #9CA3AF;
+  margin: -0.25rem 0 0.75rem 0;
+  font-style: italic;
 }
 
 .input-group {
@@ -407,6 +507,50 @@ const handleLogout = () => {
 .modal-input:focus {
   border-color: var(--mt-primary);
   box-shadow: 0 0 0 2px rgba(212, 165, 116, 0.1);
+}
+
+.modal-input.input-error {
+  border-color: #DC2626;
+}
+
+.modal-input.input-error:focus {
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.1);
+}
+
+.error-msg {
+  font-size: 0.75rem;
+  color: #DC2626;
+  margin: 0.25rem 0 0 0;
+  font-weight: 500;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 0.5rem;
+  background: none;
+  border: none;
+  color: #9CA3AF;
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.toggle-password:hover {
+  color: var(--mt-text-main);
+}
+
+.icon-sm {
+  width: 1rem;
+  height: 1rem;
 }
 
 .action-btn {

@@ -12,7 +12,12 @@ export async function register(payload) {
     // expected to contain token + user info
     if (data && data.token) {
         setToken(data.token)
-        setUser({ id: data.userId, username: data.username, phone: data.phone })
+        setUser({ 
+            id: data.userId, 
+            username: data.username, 
+            phone: data.phone,
+            avatar: data.avatar || null
+        })
     }
     return data
 }
@@ -27,7 +32,12 @@ export async function login(payload) {
     })
     if (data && data.token) {
         setToken(data.token)
-        setUser({ id: data.userId, username: data.username, phone: data.phone })
+        setUser({ 
+            id: data.userId, 
+            username: data.username, 
+            phone: data.phone,
+            avatar: data.avatar || null
+        })
     }
     return data
 }

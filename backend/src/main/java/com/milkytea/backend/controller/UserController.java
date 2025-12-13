@@ -1,6 +1,7 @@
 package com.milkytea.backend.controller;
 
 import com.milkytea.backend.dto.UserDtos;
+import com.milkytea.backend.security.JwtUtil;
 import com.milkytea.backend.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -20,6 +21,7 @@ import javax.validation.Valid;
 public class UserController {
 
     private final UserService userService;
+    private final JwtUtil jwtUtil;
 
     @GetMapping("/profile")
     @Operation(summary = "获取用户信息", description = "获取当前登录用户的个人信息")
@@ -46,6 +48,11 @@ public class UserController {
             @Valid @RequestBody UserDtos.UpdateUsernameRequest request) {
         String username = authentication.getName();
         UserDtos.UserProfileResponse response = userService.updateUsername(username, request);
+
+        // 生成新的Token
+        String newToken = jwtUtil.generateToken(response.getUsername(), new java.util.HashMap<>());
+        response.setToken(newToken);
+
         return ResponseEntity.ok(response);
     }
 

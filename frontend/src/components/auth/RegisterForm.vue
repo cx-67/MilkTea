@@ -39,7 +39,12 @@ async function submit() {
     })
     if (res && res.token) {
       setToken(res.token)
-      setUser({ id: res.userId, username: res.username, phone: res.phone })
+      setUser({ 
+        id: res.userId, 
+        username: res.username, 
+        phone: res.phone,
+        avatar: res.avatar 
+      })
       router.push('/home')
     }
   } catch (e) {

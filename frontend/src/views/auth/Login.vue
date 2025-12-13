@@ -8,21 +8,9 @@ import LoginForm from '../../components/auth/LoginForm.vue'
     <div class="bg-decoration circle-1"></div>
     <div class="bg-decoration circle-2"></div>
     
-    <!-- Q-Version Milk Tea Animation -->
-    <div class="milk-tea-anim">
-      <div class="straw"></div>
-      <div class="lid"></div>
-      <div class="cup">
-        <div class="liquid"></div>
-        <div class="pearl p1"></div>
-        <div class="pearl p2"></div>
-        <div class="pearl p3"></div>
-        <div class="face">
-          <div class="eye left"></div>
-          <div class="eye right"></div>
-          <div class="mouth"></div>
-        </div>
-      </div>
+    <!-- Milk Tea Image -->
+    <div class="milk-tea-img-container">
+      <img src="/奶茶.jpg" alt="Milk Tea" class="milk-tea-img" />
     </div>
 
     <div class="auth-card">
@@ -89,110 +77,27 @@ import LoginForm from '../../components/auth/LoginForm.vue'
   letter-spacing: 1px;
 }
 
-/* Milk Tea Animation */
-.milk-tea-anim {
+/* Milk Tea Image */
+.milk-tea-img-container {
   position: absolute;
-  left: 15%;
-  bottom: 15%;
-  transform: scale(1.5);
+  left: 10%;
+  bottom: 10%;
   z-index: 5;
+  width: 300px;
+  height: auto;
   animation: float 3s ease-in-out infinite;
 }
 
-@keyframes float {
-  0%, 100% { transform: scale(1.5) translateY(0); }
-  50% { transform: scale(1.5) translateY(-15px); }
-}
-
-.cup {
-  width: 100px;
-  height: 140px;
-  background: rgba(255, 255, 255, 0.6);
-  border: 4px solid var(--mt-text-main);
-  border-radius: 10px 10px 40px 40px;
-  position: relative;
-  overflow: hidden;
-  backdrop-filter: blur(5px);
-}
-
-.liquid {
-  position: absolute;
-  bottom: 0;
-  left: 0;
+.milk-tea-img {
   width: 100%;
-  height: 85%;
-  background: var(--mt-primary);
-  border-top: 4px solid rgba(255,255,255,0.5);
+  height: auto;
+  border-radius: 20px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  transform: rotate(-5deg);
 }
 
-.lid {
-  width: 110px;
-  height: 20px;
-  background: var(--mt-text-main);
-  position: absolute;
-  top: -20px;
-  left: -5px;
-  border-radius: 10px 10px 0 0;
-}
-
-.straw {
-  width: 12px;
-  height: 60px;
-  background: var(--mt-accent);
-  position: absolute;
-  top: -50px;
-  left: 60px;
-  transform: rotate(15deg);
-  z-index: -1;
-}
-
-.pearl {
-  width: 16px;
-  height: 16px;
-  background: var(--mt-text-main);
-  border-radius: 50%;
-  position: absolute;
-  bottom: 10px;
-}
-.p1 { left: 20px; bottom: 15px; }
-.p2 { left: 45px; bottom: 25px; }
-.p3 { left: 70px; bottom: 10px; }
-
-.face {
-  position: absolute;
-  top: 50px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60px;
-  height: 30px;
-  z-index: 2;
-}
-
-.eye {
-  width: 10px;
-  height: 10px;
-  background: var(--mt-text-main);
-  border-radius: 50%;
-  position: absolute;
-  top: 0;
-  animation: blink 4s infinite;
-}
-.eye.left { left: 10px; }
-.eye.right { right: 10px; }
-
-.mouth {
-  width: 20px;
-  height: 10px;
-  border-bottom: 3px solid var(--mt-text-main);
-  border-radius: 50%;
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-@keyframes blink {
-  0%, 96%, 100% { transform: scaleY(1); }
-  98% { transform: scaleY(0.1); }
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
 }
 </style>

@@ -62,10 +62,9 @@ const navigationItems = [
 
           <!-- 图表图标 -->
           <svg v-else-if="item.icon === 'chart'" class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 12c-1.3 0-2.5-.3-3.5-.8-.9-.5-1.9-1.2-2.5-2-.6.8-1.6 1.5-2.5 2-.9.5-2.1.8-3.5.8s-2.5-.3-3.5-.8C4.1 10.7 3.1 10 2.5 9.2"></path>
-            <path d="M21 21v-7"></path>
-            <path d="M12 21v-7"></path>
-            <path d="M3 21v-7"></path>
+            <path d="M18 20V10"></path>
+            <path d="M12 20V4"></path>
+            <path d="M6 20v-6"></path>
           </svg>
 
           <span class="nav-label">{{ item.label }}</span>
@@ -438,6 +437,26 @@ const navigationItems = [
 
   .desktop-sidebar {
     display: flex;
+    background-image: url('/奶茶.jpg');
+    background-size: cover;
+    background-position: center;
+    /* position: relative; Removed to keep fixed positioning from base class */
+  }
+
+  .desktop-sidebar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9); /* 半透明遮罩，确保文字可读 */
+    z-index: 0;
+  }
+
+  .sidebar-header, .sidebar-nav, .sidebar-footer {
+    position: relative;
+    z-index: 1;
   }
 
   .mobile-header {
@@ -451,6 +470,10 @@ const navigationItems = [
   .main-content {
     margin-left: 16rem;
     padding: 2rem;
+    height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
   }
 }
 </style>

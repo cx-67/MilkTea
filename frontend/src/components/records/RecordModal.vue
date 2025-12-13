@@ -50,13 +50,15 @@ watch(() => props.isOpen, (isOpen) => {
       </div>
 
       <!-- 表单内容 -->
-      <RecordForm
-        ref="formRef"
-        :initial-data="initialData"
-        :available-brands="availableBrands"
-        @save="handleSave"
-        @add-brand="handleAddBrand"
-      />
+      <div class="modal-body">
+        <RecordForm
+          ref="formRef"
+          :initial-data="initialData"
+          :available-brands="availableBrands"
+          @save="handleSave"
+          @add-brand="handleAddBrand"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -80,9 +82,32 @@ watch(() => props.isOpen, (isOpen) => {
   width: 100%;
   max-width: 28rem;
   max-height: 90vh;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   animation: modal-in 0.3s ease-out;
+}
+
+.modal-body {
+  overflow-y: auto;
+  flex: 1;
+  /* 自定义滚动条样式 */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(212, 165, 116, 0.3) transparent;
+}
+
+.modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background-color: rgba(212, 165, 116, 0.3);
+  border-radius: 3px;
 }
 
 @keyframes modal-in {
@@ -102,10 +127,9 @@ watch(() => props.isOpen, (isOpen) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: sticky;
-  top: 0;
   background: var(--mt-white);
   z-index: 10;
+  flex-shrink: 0;
 }
 
 .modal-title {

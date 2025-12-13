@@ -87,6 +87,18 @@ const monthName = computed(() => {
   return `${year}年${month}月`
 })
 
+const monthlyTotal = computed(() => {
+  const year = props.currentDate.getFullYear()
+  const month = props.currentDate.getMonth()
+  
+  return props.records
+    .filter(r => {
+      const d = new Date(r.consumeDate || r.date)
+      return d.getFullYear() === year && d.getMonth() === month
+    })
+    .reduce((sum, r) => sum + (Number(r.price) || 0), 0)
+})
+
 const goToPreviousMonth = () => {
   const newDate = new Date(props.currentDate)
   newDate.setMonth(newDate.getMonth() - 1)
@@ -108,23 +120,6 @@ const handleDateClick = (dayData) => {
 
 <template>
   <div class="calendar-view">
-    <!-- 月份导航 -->
-    <div class="calendar-header">
-      <h2 class="month-title">{{ monthName }}</h2>
-      <div class="nav-buttons">
-        <button @click="goToPreviousMonth" class="nav-btn">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="15,18 9,12 15,6"></polyline>
-          </svg>
-        </button>
-        <button @click="goToNextMonth" class="nav-btn">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="9,18 15,12 9,6"></polyline>
-          </svg>
-        </button>
-      </div>
-    </div>
-
     <!-- 日历网格 -->
     <div class="calendar-grid">
       <!-- 星期标题 -->
@@ -177,6 +172,9 @@ const handleDateClick = (dayData) => {
   border-radius: 1rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .calendar-header {
@@ -184,6 +182,7 @@ const handleDateClick = (dayData) => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
+  flex-shrink: 0;
 }
 
 .month-title {
@@ -191,6 +190,32 @@ const handleDateClick = (dayData) => {
   font-weight: 700;
   color: var(--mt-text-main);
   margin: 0;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.monthly-total {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  background: rgba(212, 165, 116, 0.1);
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+}
+
+.total-label {
+  font-size: 0.75rem;
+  color: var(--mt-text-light);
+}
+
+.total-amount {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--mt-primary);
 }
 
 .nav-buttons {
@@ -223,12 +248,17 @@ const handleDateClick = (dayData) => {
 
 .calendar-grid {
   width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .weekday-header {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   margin-bottom: 0.5rem;
+  flex-shrink: 0;
 }
 
 .weekday {
@@ -243,6 +273,8 @@ const handleDateClick = (dayData) => {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 0.25rem;
+  flex: 1;
+  grid-auto-rows: 1fr;
 }
 
 .day-cell {
@@ -252,6 +284,7 @@ const handleDateClick = (dayData) => {
   cursor: pointer;
   background: var(--mt-input-bg);
   border: 1px solid transparent;
+  min-height: 0;
 }
 
 .day-cell.has-records {
@@ -283,12 +316,15 @@ const handleDateClick = (dayData) => {
   height: 100%;
   z-index: -1;
   opacity: 0.8;
+  padding: 4px;
+  box-sizing: border-box;
 }
 
 .brand-bg-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  border-radius: 0.5rem;
 }
 
 .brand-count-badge {
@@ -338,6 +374,11 @@ const handleDateClick = (dayData) => {
 
   .month-title {
     font-size: 1.75rem;
+  }
+
+  .day-cell {
+    aspect-ratio: auto;
+    height: auto;
   }
 }
 

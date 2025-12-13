@@ -50,7 +50,7 @@ public class AuthService {
         claims.put("phone", user.getPhone());
         String token = jwtUtil.generateToken(user.getUsername(), claims);
 
-        return new AuthDtos.AuthResponse(token, user.getId(), user.getUsername(), user.getPhone());
+        return new AuthDtos.AuthResponse(token, user.getId(), user.getUsername(), user.getPhone(), user.getAvatar());
     }
 
     public AuthDtos.AuthResponse login(AuthDtos.LoginRequest request) {
@@ -68,6 +68,6 @@ public class AuthService {
         claims.put("phone", user.getPhone());
         String token = jwtUtil.generateToken(user.getUsername(), claims);
 
-        return new AuthDtos.AuthResponse(token, user.getId(), user.getUsername(), user.getPhone());
+        return new AuthDtos.AuthResponse(token, user.getId(), user.getUsername(), user.getPhone(), user.getAvatar());
     }
 }
