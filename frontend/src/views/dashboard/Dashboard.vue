@@ -41,7 +41,7 @@ const currentMonthStats = computed(() => {
   const month = state.currentDate.getMonth()
 
   const currentMonthRecords = state.records.filter(record => {
-    const recordDate = new Date(record.date)
+    const recordDate = new Date(record.consumeDate || record.date)
     return recordDate.getFullYear() === year && recordDate.getMonth() === month
   })
 
