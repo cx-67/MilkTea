@@ -93,15 +93,18 @@ const stats = computed(() => {
   const purchaseMap = {}
   props.records.forEach(record => {
     const brand = record.brandName || record.brand
-    if (brand) {
-      if (!purchaseMap[brand]) {
-        purchaseMap[brand] = {
+    const category = record.category
+    if (brand && category) {
+      const key = `${brand}-${category}`
+      if (!purchaseMap[key]) {
+        purchaseMap[key] = {
           count: 0,
           brand,
+          category,
           logo: record.brandLogo
         }
       }
-      purchaseMap[brand].count += 1
+      purchaseMap[key].count += 1
     }
   })
 
@@ -110,21 +113,20 @@ const stats = computed(() => {
     .slice(0, 5)
 
   // 最近记录（按日期排序）
-  const recentRecords = [...props.records]
-    .sort((a, b) => {
-      const dateA = new Date(a.consumeDate || a.date)
-      const dateB = new Date(b.consumeDate || b.date)
-      return dateB - dateA
-    })
-    .slice(0, 5)
+  // const recentRecords = [...props.records]
+  //   .sort((a, b) => {
+  //     const dateA = new Date(a.consumeDate || a.date)
+  //     const dateB = new Date(b.consumeDate || b.date)
+  //     return dateB - dateA
+  //   })
+  //   .slice(0, 5)
 
   return {
     totalCups,
     totalCost,
     avgPrice,
     topRatings,
-    topPurchaseCounts,
-    recentRecords
+    topPurchaseCounts
   }
 })
 
@@ -222,55 +224,16 @@ const maxCount = computed(() => {
             v-for="(item, index) in stats.topPurchaseCounts" 
             :key="index" 
             class="ranking-item clickable"
-            @click="openBrandList(item.brand)"
+            @click="openTopRatingDetail(item)"
           >
             <div class="ranking-info">
               <img :src="item.logo || '/default-brand-icon.png'" class="brand-logo-sm" alt="logo" />
-              <span class="ranking-name">{{ item.brand }}</span>
+              <span class="ranking-name">{{ item.brand }} - {{ item.category }}</span>
             </div>
             <span class="ranking-value count-value">{{ item.count }}</span>
           </div>
           <p v-if="stats.topPurchaseCounts.length === 0" class="empty-state">暂无数据</p>
         </div>
-      </div>
-    </div>
-
-    <!-- 近期记录 -->
-    <div class="recent-records">
-      <h3 class="subsection-title">近期记录</h3>
-      <div class="records-table">
-        <table v-if="stats.recentRecords.length > 0">
-          <thead>
-            <tr>
-              <th style="width: 15%">日期</th>
-              <th style="width: 30%">品牌</th>
-              <th style="width: 15%">金额</th>
-              <th style="width: 40%">评价</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr 
-              v-for="record in stats.recentRecords" 
-              :key="record.id" 
-              class="clickable-row"
-              @click="openRecordDetail(record)"
-            >
-              <td class="record-date">{{ (record.consumeDate || record.date).slice(5) }}</td>
-              <td class="record-brand">
-                <div class="brand-cell">
-                  <img :src="record.brandLogo || '/default-brand-icon.png'" class="brand-logo-xs" alt="logo" />
-                  <span>{{ record.brandName || record.brand }} - {{ record.category }}</span>
-                </div>
-              </td>
-              <td class="record-price">¥{{ record.price }}</td>
-              <td class="record-comment">
-                <span v-if="record.comment" class="comment-text">{{ record.comment }}</span>
-                <span v-else class="no-comment">暂无评语</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <p v-else class="empty-state">暂无记录</p>
       </div>
     </div>
 

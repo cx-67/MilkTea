@@ -38,6 +38,13 @@ export async function createRecord(recordData) {
   })
 }
 
+// 搜索记录
+export async function searchRecords(category) {
+  return await request(`/api/records/search?category=${encodeURIComponent(category)}`, {
+    method: 'GET'
+  })
+}
+
 // 更新奶茶记录
 export async function updateRecord(id, recordData) {
   // 转换前端字段到后端字段

@@ -26,6 +26,7 @@ const handleLogout = () => {
 
 const navigationItems = [
   { id: 'calendar', label: '日历视图', icon: 'calendar' },
+  { id: 'records', label: '记录列表', icon: 'list' },
   { id: 'stats', label: '统计报表', icon: 'chart' }
 ]
 </script>
@@ -65,6 +66,16 @@ const navigationItems = [
             <path d="M18 20V10"></path>
             <path d="M12 20V4"></path>
             <path d="M6 20v-6"></path>
+          </svg>
+
+          <!-- 列表图标 -->
+          <svg v-else-if="item.icon === 'list'" class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="8" y1="6" x2="21" y2="6"></line>
+            <line x1="8" y1="12" x2="21" y2="12"></line>
+            <line x1="8" y1="18" x2="21" y2="18"></line>
+            <line x1="3" y1="6" x2="3.01" y2="6"></line>
+            <line x1="3" y1="12" x2="3.01" y2="12"></line>
+            <line x1="3" y1="18" x2="3.01" y2="18"></line>
           </svg>
 
           <span class="nav-label">{{ item.label }}</span>

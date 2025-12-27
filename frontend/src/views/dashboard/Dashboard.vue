@@ -10,6 +10,7 @@ import { updateUserProfile, updateUsername, updatePassword } from '../../api/use
 import AppLayout from '../../components/common/AppLayout.vue'
 import CalendarView from '../../components/statistics/CalendarView.vue'
 import StatsSummary from '../../components/statistics/StatsSummary.vue'
+import RecordList from '../../components/records/RecordList.vue'
 import RecordModal from '../../components/records/RecordModal.vue'
 import ProfileModal from '../../components/common/ProfileModal.vue'
 import ToastNotification from '../../components/common/ToastNotification.vue'
@@ -365,15 +366,12 @@ onMounted(() => {
         :records="state.records"
       />
 
-      <!-- 我的记录视图 (占位) -->
-      <div v-else-if="state.currentTab === 'records'" class="placeholder-view">
-        <div class="empty-state">
-          <div class="empty-state-icon">📋</div>
-          <h3>我的记录列表</h3>
-          <p>这里将显示所有奶茶消费记录的列表视图</p>
-          <p class="coming-soon">功能开发中...</p>
-        </div>
-      </div>
+      <!-- 记录列表视图 -->
+      <RecordList
+        v-else-if="state.currentTab === 'records'"
+        :records="state.records"
+        @edit-record="handleEditRecord"
+      />
 
       <!-- 品牌图鉴视图 (占位) -->
       <div v-else-if="state.currentTab === 'brands'" class="placeholder-view">
